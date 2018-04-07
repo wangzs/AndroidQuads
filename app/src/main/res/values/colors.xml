@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3b5269</color>
+    <color name="colorPrimaryDark">#2c3e50</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white_pinky">#FFEEEE</color>
+    <color name="white">#FFFFFF</color>
+    <color name="light_blue">#AFC3DA</color>
+    <color name="green_sea">#1abc9c</color>
+    <color name="green_sea_dark">#288e7a</color>
+    <color name="water_melon">#ff6b81</color>
+    <color name="water_melon_dark">#bc5a69</color>
+    <color name="bay_wharf">#747d8c</color>
+    <color name="bay_wharf_dark">#5f646b</color>
+    <color name="water_spout">#9FFFF5</color>
+    <color name="water_spout_dark">#87c4be</color>
+    <color name="ceil">#8CAACC</color>
+    <color name="ceil_dark">#7d92a9</color>
+</resources>

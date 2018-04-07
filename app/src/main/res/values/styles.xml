@@ -1,0 +1,44 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <style name="Theme.NoTitle" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <style name="GreenSeaButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/green_sea_dark</item>
+        <item name="colorButtonNormal">@color/green_sea</item>
+    </style>
+
+    <style name="WaterMelonButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/water_melon</item>
+        <item name="colorButtonNormal">@color/water_melon_dark</item>
+    </style>
+
+    <style name="BayWhalfButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/bay_wharf</item>
+        <item name="colorButtonNormal">@color/bay_wharf_dark</item>
+    </style>
+
+    <style name="WaterSpoutButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/water_spout</item>
+        <item name="colorButtonNormal">@color/water_spout_dark</item>
+    </style>
+
+    <style name="CeilButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/ceil</item>
+        <item name="colorButtonNormal">@color/ceil_dark</item>
+    </style>
+</resources>

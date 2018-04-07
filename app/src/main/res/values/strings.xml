@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ImageQuads</string>
+    <string name="help_tip">1.单击进行图片选择\n2.长按图片可以对图片进行正方形裁剪</string>
+    <string name="continue_txt">继续</string>
+    <string name="pause_txt">暂停</string>
+    <string name="split_finish_txt">已完成</string>
+    <string name="save_txt">保存</string>
+    <string name="reelect_image_txt">重新选图</string>
+    <string name="split_cnt_format">分裂次数: %d</string>
+    <string name="long_click_err_tip">需要先选择一张图片</string>
+    <string name="pic_chose_title">图片选择</string>
+</resources>
