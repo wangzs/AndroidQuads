@@ -1,3 +1,7 @@
+# App使用动态图
+
+![](./android_quad.gif)
+
 # 感谢
 
 https://github.com/fogleman/Quads
