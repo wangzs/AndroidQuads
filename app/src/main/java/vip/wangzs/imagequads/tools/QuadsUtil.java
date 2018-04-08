@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -17,10 +19,11 @@ import vip.wangzs.imagequads.HeapPriorityQueue;
  */
 
 public class QuadsUtil {
-    public static final int MODE_RECT = 0;
-    public static final int MODE_CIRCLE = 1;
-
-    public static final int MODE = MODE_RECT;
+    public static final int MODE_RECT = 0;          // 矩形
+    public static final int MODE_CIRCLE = 1;        // 圆形
+    public static final int MODE_OVAL = 2;          // 椭圆
+    public static final int MODE_ROUND_RECT = 3;    // 圆角矩形
+    public static final int MODE_HEX = 4;           // 正六边形
 
     /*
     ITERATIONS = 1024
@@ -32,7 +35,7 @@ public class QuadsUtil {
     AREA_POWER = 0.25
     OUTPUT_SCALE = 1
      */
-    static final int LEAF_SIZE = 6;
+    static final int LEAF_SIZE = 8;
     static final int OUTPUT_SCALE = 1;
     static final int PADDING = 1;
 
@@ -125,7 +128,22 @@ public class QuadsUtil {
         public Model() {
         }
 
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
         public Model init(String imgPath, int setW, int setH) {
+            int[] wh = ImageUtil.getImageSize(imgPath);
+            int originW = wh[0], originH = wh[1];
+            if (originW > originH) {    // w > h
+                setH = (int) (setW * originH / (1.f * originW));
+            } else if (originW < originH) {
+                setW = (int) (setH * originW / (1.f * originH));
+            }
             Bitmap bitmap = ImageUtil.decodeBitmapFromPath(imgPath, setW, setH);
             width = bitmap.getWidth();
             height = bitmap.getHeight();
@@ -177,9 +195,77 @@ public class QuadsUtil {
             }
         }
 
-        public void render(int maxDepth, Canvas canvas) {
-            int dx = PADDING, dy = PADDING;
-            Paint paint = new Paint();
+        // 绘制图形
+        private void drawGraphic(Box box, Canvas canvas, Paint paint, Path viewPath, int mode) {
+            int l = box.left * OUTPUT_SCALE + PADDING,
+                    t = box.top * OUTPUT_SCALE + PADDING,
+                    r = box.right * OUTPUT_SCALE,
+                    b = box.bottom * OUTPUT_SCALE;
+            RectF rectF;
+            int centerX, centerY;
+            float radius;
+
+            switch (mode) {
+                case MODE_CIRCLE:   // 绘制圆形
+                    centerX = (l + r) / 2;
+                    centerY = (b + t) / 2;
+                    radius = (r - l) / 2.f;
+                    canvas.drawCircle(centerX, centerY, radius, paint);
+                    break;
+
+                case MODE_OVAL:
+                    rectF = new RectF(l, t, r, b);
+                    canvas.drawOval(rectF, paint);
+                    break;
+
+                case MODE_RECT: // 绘制正方形
+                    canvas.drawRect(l, t, r, b, paint);
+                    break;
+
+                case MODE_ROUND_RECT:   // 绘制圆角矩形
+                    rectF = new RectF(l, t, r, b);
+                    canvas.drawRoundRect(rectF, LEAF_SIZE / 2, LEAF_SIZE / 2, paint);
+                    break;
+
+                case MODE_HEX:
+                    centerX = (l + r) / 2;
+                    centerY = (b + t) / 2;
+                    radius = (r - l) / 2.f;
+                    drawHex(centerX, centerY, radius, canvas, paint, viewPath);
+                    break;
+
+                default:
+                    canvas.drawRect(l, t, r, b, paint);
+                    break;
+            }
+        }
+
+        static float[] cosArr = {(float) Math.cos(0), (float) Math.cos(Math.PI / 3),
+                (float) Math.cos(2 * Math.PI / 3), (float) Math.cos(Math.PI),
+                (float) Math.cos(4 * Math.PI / 3), (float) Math.cos(5 * Math.PI / 3)};
+
+        static float[] sinArr = {(float) Math.sin(0), (float) Math.sin(Math.PI / 3),
+                (float) Math.sin(2 * Math.PI / 3), (float) Math.sin(Math.PI),
+                (float) Math.sin(4 * Math.PI / 3), (float) Math.sin(5 * Math.PI / 3)};
+
+        private void drawHex(int centerX, int centerY, float radius, Canvas canvas, Paint paint, Path viewPath) {
+            viewPath.reset();
+            for (int i = 0; i < 6; i++) {
+                if (i == 0) {
+                    viewPath.moveTo(centerX + radius * cosArr[i],
+                            centerY + radius * sinArr[i]);
+                } else {
+                    viewPath.lineTo(centerX + radius * cosArr[i],
+                            centerY + radius * sinArr[i]);
+                }
+            }
+            viewPath.close();
+            canvas.drawPath(viewPath, paint);
+        }
+
+        public void render(int maxDepth, Canvas canvas, int mode) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            Path viewPath = new Path();
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(Color.BLACK);
             canvas.drawRect(0, 0, width * OUTPUT_SCALE, height * OUTPUT_SCALE, paint);
@@ -187,19 +273,8 @@ public class QuadsUtil {
             List<Quad> leafNodes = root.getLeafNodes(maxDepth);
 
             for (Quad quad : leafNodes) {
-                int l = quad.box.left * OUTPUT_SCALE + dx,
-                        t = quad.box.top * OUTPUT_SCALE + dy,
-                        r = quad.box.right * OUTPUT_SCALE - dx,
-                        b = quad.box.bottom * OUTPUT_SCALE - dy;
                 paint.setColor(quad.color.toColor());
-                if (MODE == MODE_RECT) {
-                    canvas.drawRect(l, t, r, b, paint);
-                } else if (MODE == MODE_CIRCLE) {
-                    int centerX = (l + r) / 2,
-                            centerY = (b + t) / 2;
-                    float radius = (r - l) / 2.f;
-                    canvas.drawCircle(centerX, centerY, radius, paint);
-                }
+                drawGraphic(quad.box, canvas, paint, viewPath, mode);
             }
         }
     }
@@ -252,10 +327,12 @@ public class QuadsUtil {
             Quad tr = new Quad(model, new Box(lr, t, r, tb), depth);
             Quad bl = new Quad(model, new Box(l, tb, lr, b), depth);
             Quad br = new Quad(model, new Box(lr, tb, r, b), depth);
-            children.add(tl);
-            children.add(tr);
-            children.add(bl);
-            children.add(br);
+            synchronized (this) {
+                children.add(tl);
+                children.add(tr);
+                children.add(bl);
+                children.add(br);
+            }
             return children;
         }
 
@@ -267,9 +344,11 @@ public class QuadsUtil {
             if (maxDepth != -1 && depth >= maxDepth) {
                 result.add(this);
             } else {
-                for (Quad child : children) {
-                    List<Quad> leafNodes = child.getLeafNodes(maxDepth);
-                    result.addAll(leafNodes);
+                synchronized (this) {
+                    for (Quad child : children) {
+                        List<Quad> leafNodes = child.getLeafNodes(maxDepth);
+                        result.addAll(leafNodes);
+                    }
                 }
 
             }

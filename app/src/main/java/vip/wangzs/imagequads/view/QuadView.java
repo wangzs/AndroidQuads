@@ -28,13 +28,14 @@ public class QuadView extends View {
     public static final int STATUS_PAUSE = 1;
     public static final int STATUS_STOP = 2;
 
-    private final static int MAX_SPLIT_CNT = 4096;
+    private final static int MAX_SPLIT_CNT = 2048;
 
     private Handler handler;
     private QuadsUtil.Model model;
     private int status = STATUS_STOP;
     private int splitCnt = 0;
     private OnStatusChange listener;
+    private int drawModel = QuadsUtil.MODE_ROUND_RECT;
 
     public QuadView(Context context) {
         super(context);
@@ -67,10 +68,18 @@ public class QuadView extends View {
         };
     }
 
-    public void startInit(QuadsUtil.Model model, OnStatusChange statusChangeListener) {
+    public void startInit(QuadsUtil.Model model, int drawModel, OnStatusChange statusChangeListener) {
+        splitCnt = 0;
         status = STATUS_RUN;
         this.model = model;
         this.listener = statusChangeListener;
+        if (this.model.getWidth() != this.model.getHeight()
+                && drawModel == QuadsUtil.MODE_CIRCLE) {
+            this.drawModel = QuadsUtil.MODE_OVAL;
+        } else {
+            this.drawModel = drawModel;
+        }
+
         startRender();
     }
 
@@ -100,9 +109,41 @@ public class QuadView extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (model != null) {
+            widthMeasureSpec = model.getWidth();
+            heightMeasureSpec = model.getHeight();
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int wMeasureSpec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);
+            int hMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY);
+            super.onMeasure(wMeasureSpec, hMeasureSpec);
+        } else {
+            int finalMeasureSpec;
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+
+            int size;
+            if (widthMode == MeasureSpec.EXACTLY && widthSize > 0) {
+                size = widthSize;
+            } else if (heightMode == MeasureSpec.EXACTLY && heightSize > 0) {
+                size = heightSize;
+            } else {
+                size = widthSize < heightSize ? widthSize : heightSize;
+            }
+
+            finalMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
+            super.onMeasure(finalMeasureSpec, finalMeasureSpec);
+        }
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         if (model != null) {
-            model.render(-1, canvas);
+            model.render(-1, canvas, drawModel);
         }
     }
 

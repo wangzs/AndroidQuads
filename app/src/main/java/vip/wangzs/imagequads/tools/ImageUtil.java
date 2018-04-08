@@ -13,6 +13,13 @@ import java.nio.ByteBuffer;
 
 public class ImageUtil {
 
+    public static int[] getImageSize(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options); // 此时返回的bitmap为null
+        return new int[]{options.outWidth, options.outHeight};
+    }
+
     public static Bitmap decodeBitmapFromResource(Context context, int imgResId, int reqW, int reqH) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = calculateSampleSize(options, reqW, reqH);

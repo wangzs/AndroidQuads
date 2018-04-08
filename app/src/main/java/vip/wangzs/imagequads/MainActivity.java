@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         cropImgView.getWidth(),
                         cropImgView.getHeight()
                 );
-                quadView.startInit(quadModel, new QuadView.OnStatusChange() {
+                quadView.startInit(quadModel, QuadsUtil.MODE_CIRCLE, new QuadView.OnStatusChange() {
                     @Override
                     public void onMaxSplitStop() {
                         handler.post(new Runnable() {
@@ -260,13 +260,13 @@ public class MainActivity extends AppCompatActivity {
         // 设置裁剪图片可操作的手势
         options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
         // 是否隐藏底部容器，默认显示
-        options.setHideBottomControls(false);
+        //options.setHideBottomControls(false);
         // 设置toolbar颜色
         options.setToolbarColor(ActivityCompat.getColor(this, R.color.colorPrimary));
         // 设置状态栏颜色
         options.setStatusBarColor(ActivityCompat.getColor(this, R.color.colorPrimary));
         // 是否能调整裁剪框
-        options.setFreeStyleCropEnabled(false);
+        options.setFreeStyleCropEnabled(true);
         // UCrop配置
         uCrop.withOptions(options);
         // 设置裁剪图片的宽高比，比如16：9
