@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="black">#000000</color>
     <color name="colorPrimary">#3b5269</color>
     <color name="colorPrimaryDark">#2c3e50</color>
     <color name="colorAccent">#FF4081</color>
@@ -16,4 +17,8 @@
     <color name="water_spout_dark">#87c4be</color>
     <color name="ceil">#8CAACC</color>
     <color name="ceil_dark">#7d92a9</color>
+    <color name="transparent">#00000000</color>
+    <color name="gray_orange">#cc8b31</color>
+    <color name="dialog_bg_gray">#42576c</color>
+    <color name="dialog_title_gray">#33b5e5</color>
 </resources>

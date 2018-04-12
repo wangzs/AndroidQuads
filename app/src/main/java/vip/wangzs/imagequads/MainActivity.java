@@ -3,6 +3,7 @@ package vip.wangzs.imagequads;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,12 +30,15 @@ import java.util.Locale;
 import vip.wangzs.imagequads.tools.FileUtil;
 import vip.wangzs.imagequads.tools.PermissionUtil;
 import vip.wangzs.imagequads.tools.QuadsUtil;
+import vip.wangzs.imagequads.tools.SpConfigUtil;
 import vip.wangzs.imagequads.tools.UriUtil;
 import vip.wangzs.imagequads.tools.WindowUtil;
 import vip.wangzs.imagequads.view.QuadView;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_CONFIG_QUAD = 2;
+
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         saveBtn = findViewById(R.id.save_btn);
         reelectBtn = findViewById(R.id.reelect_btn);
         tipsTxtView = findViewById(R.id.tips_txt);
+        configQuad();
     }
 
     private void setListener() {
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                         cropImgView.getWidth(),
                         cropImgView.getHeight()
                 );
-                quadView.startInit(quadModel, QuadsUtil.MODE_CIRCLE, new QuadView.OnStatusChange() {
+                quadView.startInit(quadModel, new QuadView.OnStatusChange() {
                     @Override
                     public void onMaxSplitStop() {
                         handler.post(new Runnable() {
@@ -194,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // TODO: 打开配置页
+                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+                        startActivityForResult(intent, REQUEST_CONFIG_QUAD);
                     }
                 });
     }
@@ -219,6 +225,14 @@ public class MainActivity extends AppCompatActivity {
         controlBtn.setTextColor(ContextCompat.getColor(this, txtColorId));
     }
 
+    private void configQuad() {
+        if (quadView != null) {
+            int drawBgColor = (int) SpConfigUtil.get(this, SpConfigUtil.QUAD_BG_COLOR, Color.BLACK);
+            int drawMode = (int) SpConfigUtil.get(this, SpConfigUtil.SHAPE_MODE, QuadsUtil.MODE_ROUND_RECT);
+            quadView.doConfig(drawMode, drawBgColor);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -239,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
                     error.printStackTrace();
                 }
             }
+        }
+        if (requestCode == REQUEST_CONFIG_QUAD) {
+            configQuad();
         }
     }
 

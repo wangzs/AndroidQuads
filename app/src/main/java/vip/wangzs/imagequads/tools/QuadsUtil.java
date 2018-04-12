@@ -263,11 +263,11 @@ public class QuadsUtil {
             canvas.drawPath(viewPath, paint);
         }
 
-        public void render(int maxDepth, Canvas canvas, int mode) {
+        public void render(int maxDepth, Canvas canvas, int mode, int bgColor) {
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             Path viewPath = new Path();
             paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.BLACK);
+            paint.setColor(bgColor);
             canvas.drawRect(0, 0, width * OUTPUT_SCALE, height * OUTPUT_SCALE, paint);
 
             List<Quad> leafNodes = root.getLeafNodes(maxDepth);

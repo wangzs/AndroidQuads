@@ -3,6 +3,7 @@ package vip.wangzs.imagequads.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,7 +36,8 @@ public class QuadView extends View {
     private int status = STATUS_STOP;
     private int splitCnt = 0;
     private OnStatusChange listener;
-    private int drawModel = QuadsUtil.MODE_ROUND_RECT;
+    private int drawMode = QuadsUtil.MODE_ROUND_RECT;
+    private int bgColor = Color.BLACK;
 
     public QuadView(Context context) {
         super(context);
@@ -68,16 +70,19 @@ public class QuadView extends View {
         };
     }
 
-    public void startInit(QuadsUtil.Model model, int drawModel, OnStatusChange statusChangeListener) {
+    public void doConfig(int mode, int bgColor) {
+        this.drawMode = mode;
+        this.bgColor = bgColor;
+    }
+
+    public void startInit(QuadsUtil.Model model, OnStatusChange statusChangeListener) {
         splitCnt = 0;
         status = STATUS_RUN;
         this.model = model;
         this.listener = statusChangeListener;
         if (this.model.getWidth() != this.model.getHeight()
-                && drawModel == QuadsUtil.MODE_CIRCLE) {
-            this.drawModel = QuadsUtil.MODE_OVAL;
-        } else {
-            this.drawModel = drawModel;
+                && this.drawMode == QuadsUtil.MODE_CIRCLE) {
+            this.drawMode = QuadsUtil.MODE_OVAL;
         }
 
         startRender();
@@ -143,7 +148,7 @@ public class QuadView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (model != null) {
-            model.render(-1, canvas, drawModel);
+            model.render(-1, canvas, drawMode, bgColor);
         }
     }
 
