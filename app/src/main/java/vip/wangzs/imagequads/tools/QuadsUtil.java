@@ -369,7 +369,7 @@ public class QuadsUtil {
 
         @Override
         public int compareTo(@NonNull HeapKV heapKey) {
-            if (leaf < heapKey.leaf) {
+            if (leaf < heapKey.leaf) {  // 1为叶子就不用分裂
                 return -1;
             } else if (leaf == heapKey.leaf) {
                 if (score < heapKey.score) {
